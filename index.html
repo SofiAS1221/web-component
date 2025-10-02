@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KT2-1 Улучшенный</title>
+    <style>
+        main {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: #000000;
+        }
+    </style>
+</head>
+<body>
+    <template id="product-card">
+        <style>
+            .card {
+                border: 1px solid #000000;
+                border-radius: 12px;
+                padding: 15px;
+                max-width: 220px;
+                text-align: center;
+                background: white;
+                box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                user-select: none;
+            }
+
+            img {
+                max-width: 100%;
+                border-radius: 8px;
+                filter: grayscale(0%);
+                transition: filter 0.3s ease;
+                aspect-ratio: 1 / 1;
+                object-fit: cover;
+            }
+
+            h3 {
+                font-size: 18px;
+                margin: 0;
+                color: #df07cd;
+            }
+
+            .price {
+                font-weight: 600;
+                font-size: 16px;
+                color: #444;
+            }
+
+            button {
+                background-color: #e207b6;
+                color: rgb(0, 0, 0);
+                border: none;
+                border-radius: 6px;
+                padding: 10px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: background-color 0.3s ease;
+            }
+
+            button:hover {
+                background-color: #e60c99;
+            }
+
+            .slider-container {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 14px;
+                color: #555;
+            }
+
+           input[type=range] {
+    appearance: none; /* стандартное свойство */
+    -webkit-appearance: none; /* для поддержки WebKit */
+    width: 100%;
+    height: 5px;
+    border-radius: 5px;
+    background: #ddd;
+    outline: none;
+    cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ea04ea;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+input[type=range]::-webkit-slider-thumb:hover {
+    background: #f603e6;
+}
+
+        </style>
+        <div class="card">
+            <img id="image" alt="Изображение товара" />
+            <h3 id="title"></h3>
+            <p class="price" id="price"></p>
+            <slot></slot>
+            <div class="slider-container">
+                <label for="bwSlider">Ч/Б:</label>
+                <input type="range" id="bwSlider" min="0" max="100" value="0" />
+            </div>
+        </div>
+    </template>
+    <main>
+        <product-card image="палетка.jpg" title="палетка" price="4 000 ₽">
+            <button>Купить</button>
+        </product-card>
+
+        <product-card image="помада.jpg" title="помада" price="1 500 ₽">
+            <button>Купить</button>
+        </product-card>
+
+        <product-card image="румяна.jpg" title="румяна" price="800 ₽">
+            <button>Добавить в корзину</button>
+        </product-card>
+    </main>
+    <script>
+        class ProductCard extends HTMLElement {
+            constructor() {
+                super();
+                const template = document.getElementById('product-card');
+                const shadow = this.attachShadow({ mode: 'open' });
+                shadow.appendChild(template.content.cloneNode(true));
+                const img = shadow.getElementById('image');
+                img.src = this.getAttribute('image') || 'https://via.placeholder.com/200';
+                img.alt = this.getAttribute('title') || 'Товар';
+
+                const title = shadow.getElementById('title');
+                title.textContent = this.getAttribute('title') || 'Неизвестный товар';
+
+                const price = shadow.getElementById('price');
+                price.textContent = this.getAttribute('price') || '';
+
+                this.bwSlider = shadow.getElementById('bwSlider');
+                this.bwSlider.addEventListener('input', () => {
+                    const value = this.bwSlider.value;
+                    img.style.filter = `grayscale(${value}%)`;
+                });
+            }
+        }
+        customElements.define('product-card', ProductCard);
+    </script>
+</body>
+</html>
